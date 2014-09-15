@@ -1,21 +1,25 @@
 var Replayer = function(obj) {
     this.record = [];
     var self = this;
-	for (var k in obj) {
-		if (typeof obj[k] === 'function') {
+    for (var k in obj) {
+        if (typeof obj[k] === 'function') {
             // Close on k.
             (function () {
                 var fnName = k;
                 self[fnName] = function() {
                     var args = Array.prototype.slice.call(arguments);
                     self.record.push([ fnName, args ]);
-                    var result = obj[fnName].call(obj, args);
-                    console.log('Recording ' + fnName + ': result = ' + JSON.stringify(result));
+                    var result;
+                    if (args.length == 1) {
+                        result = obj[fnName].call(obj, args[0]);
+                    } else {
+                        result = obj[fnName].call(obj, args); 
+                    }
                     return result === obj ? self : result;
                 };
             })();
-		}
-	}
+        }
+    }
 };
 
 Replayer.prototype.replay = function(newSelf) {
@@ -23,8 +27,12 @@ Replayer.prototype.replay = function(newSelf) {
     for (var idx in this.record) {
         var curMethod = this.record[idx][0];
         var curArgs = this.record[idx][1];
-        var curResult = newSelf[curMethod].call(newSelf, curArgs);
-        console.log('Replaying ' + curMethod + ': result = ' + JSON.stringify(curResult));
+        var curResult;
+        if (curArgs.length == 1) {
+            curResult = newSelf[curMethod].call(newSelf, curArgs[0]);
+        } else {
+            curResult = newSelf[curMethod].call(newSelf, curArgs); 
+        }
         results.push(curResult);
     }
 
