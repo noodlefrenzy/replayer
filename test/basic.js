@@ -6,17 +6,14 @@ var TestClass = function(str) {
 };
 
 TestClass.prototype.indexOf = function(substr) {
-    console.log('indexOf('+substr+')');
     return this.str.indexOf(substr);
 };
 
 TestClass.prototype.chain1 = function() {
-    console.log('In chain1');
     return this;
 };
 
 TestClass.prototype.chain2 = function() {
-    console.log('In chain2');
     return this;
 };
 

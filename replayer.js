@@ -1,23 +1,24 @@
+
+function makeProxy(obj, replayer, fnName) {
+    return function() {
+        var args = Array.prototype.slice.call(arguments);
+        replayer.record.push([ fnName, args ]);
+        var result;
+        if (args.length == 1) {
+            result = obj[fnName].call(obj, args[0]);
+        } else {
+            result = obj[fnName].call(obj, args); 
+        }
+        return result === obj ? replayer : result;        
+    };
+}
+
 var Replayer = function(obj) {
     this.record = [];
     var self = this;
     for (var k in obj) {
         if (typeof obj[k] === 'function') {
-            // Close on k.
-            (function () {
-                var fnName = k;
-                self[fnName] = function() {
-                    var args = Array.prototype.slice.call(arguments);
-                    self.record.push([ fnName, args ]);
-                    var result;
-                    if (args.length == 1) {
-                        result = obj[fnName].call(obj, args[0]);
-                    } else {
-                        result = obj[fnName].call(obj, args); 
-                    }
-                    return result === obj ? self : result;
-                };
-            })();
+            self[k] = makeProxy(obj, self, k);
         }
     }
 };
