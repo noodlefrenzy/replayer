@@ -2,16 +2,17 @@ var Replayer = function(obj) {
     this.record = [];
     var self = this;
 	for (var k in obj) {
-        console.log('Checking '+k);
-        debugger;
 		if (typeof obj[k] === 'function') {
-			console.log('Installing replayer for ' + k);
-            self[k] = function() {
-                var args = Array.prototype.slice.call(arguments);
-                console.log('Recording call to ' + k);
-                self.record.push([ k, args ]);
-                return obj[k].call(obj, args);
-            };
+            // Close on k.
+            (function () {
+                var fnName = k;
+                self[fnName] = function() {
+                    var args = Array.prototype.slice.call(arguments);
+                    self.record.push([ fnName, args ]);
+                    var result = obj[fnName].call(obj, args);
+                    return result === obj ? self : result;
+                };
+            })();
 		}
 	}
 };
@@ -27,4 +28,4 @@ Replayer.prototype.replay = function(newSelf) {
     return results;
 };
 
-exports.watch = function(obj) { return new Replayer(obj); };
+module.exports.watch = function(obj) { return new Replayer(obj); };
