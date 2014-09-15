@@ -10,7 +10,7 @@ var Replayer = function(obj) {
                     var args = Array.prototype.slice.call(arguments);
                     self.record.push([ fnName, args ]);
                     var result = obj[fnName].call(obj, args);
-                    console.log('Recording ' + fnName + ': result = ' + result.toString());
+                    console.log('Recording ' + fnName + ': result = ' + JSON.stringify(result));
                     return result === obj ? self : result;
                 };
             })();
@@ -24,7 +24,7 @@ Replayer.prototype.replay = function(newSelf) {
         var curMethod = this.record[idx][0];
         var curArgs = this.record[idx][1];
         var curResult = newSelf[curMethod].call(newSelf, curArgs);
-        console.log('Replaying ' + curMethod + ': result = ' + curResult.toString());
+        console.log('Replaying ' + curMethod + ': result = ' + JSON.stringify(curResult));
         results.push(curResult);
     }
 
