@@ -1,4 +1,12 @@
-
+/**
+ * Used internally by the Replayer.
+ * Makes a proxy for the given object's function that will wrap it, allowing it to be recorded and replayed later.
+ *
+ * @param {object} obj              Object to wrap
+ * @param {Replayer} replayer       Replayer used to record
+ * @param {string} fnName           Name of the function to record
+ * @returns {Function}              Proxy function that will do the recording
+ */
 function makeProxy(obj, replayer, fnName) {
     return function() {
         var args = Array.prototype.slice.call(arguments);
@@ -13,6 +21,12 @@ function makeProxy(obj, replayer, fnName) {
     };
 }
 
+/**
+ * Builds a Replayer object, wrapping the given object instance.
+ *
+ * @param {object} obj              Object instance to wrap
+ * @constructor
+ */
 var Replayer = function(obj) {
     this.record = [];
     var self = this;
@@ -23,6 +37,13 @@ var Replayer = function(obj) {
     }
 };
 
+/**
+ * Replays any recorded function calls, in order, on the passed-in instance.
+ * Must be duck-type compatible with the original instance for all recorded functions.
+ *
+ * @param {object} newSelf          Object on which to play back recorded function calls.
+ * @returns {Array}                 Results from all calls, in order.  Calls with no result get recorded as 'undefined'.
+ */
 Replayer.prototype.replay = function(newSelf) {
     var results = [];
     for (var idx in this.record) {
