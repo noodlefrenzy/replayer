@@ -29,6 +29,7 @@ function makeProxy(obj, replayer, fnName) {
  */
 var Replayer = function(obj) {
     this.record = [];
+    this.wrapped = obj;
     var self = this;
     for (var k in obj) {
         if (typeof obj[k] === 'function') {
@@ -36,6 +37,14 @@ var Replayer = function(obj) {
         }
     }
 };
+
+/**
+ * Allows access to wrapped object.  Should only be used to avoid capturing calls that should avoid capture.
+ *
+ * @function getWrapped
+ * @returns {object}                Wrapped object.
+ */
+Replayer.prototype.getWrapped = function() { return this.wrapped; };
 
 /**
  * Replays any recorded function calls, in order, on the passed-in instance.
